@@ -50,15 +50,14 @@ module TP
             "#{ele}"
           end
         end
+
+        ui.msg("Fixing up the run_list!\n")
+        ui.msg("Here is the modified set of roles: #{@new_list}")
+
+        @node.run_list(@new_list)
+        @node.save
+        ui.msg("Node run_list has been saved on #{host}.") unless !$?.success?
       end
-
-      ui.msg("Fixing up the run_list!\n")
-      ui.msg("Here is the modified set of roles: #{@new_list}")
-
-      @node.run_list(@new_list)
-      @node.save
-
-     ui.msg("Node run_list has been saved.") unless !$?.success?
     end
 
   end
