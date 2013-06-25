@@ -41,22 +41,34 @@ module TP
         list = @node.run_list
         ui.msg("Here is the current set of roles on this host: #{list}")
 
-        @new_list = list.map do |ele|
-          old_role_name = config[:old_role]
+        begin
 
-          if ele == "role[#{config[:old_role]}]"
-            "role[#{config[:new_role]}]"
-          else
-            "#{ele}"
+          @new_list = list.map do |ele|
+            if rest.get_rest("/roles/#{config[:new_role]}")
+              if ele == "role[#{config[:old_role]}]"
+                "role[#{config[:new_role]}]"
+              else
+                "#{ele}"
+              end
+            end
           end
+
+          ui.msg("Fixing up the run_list!\n")
+          ui.msg("Here is the modified set of roles: #{@new_list}")
+
+          @node.run_list(@new_list)
+          @node.save
+
+          if $?.success?
+            ui.msg("Node run_list has been saved on #{host}.")
+          else
+            ui.fatal("Node run_list has been NOT saved on #{host}!")
+          end
+
+        rescue Net::HTTPServerException 
+          ui.fatal("Role: '#{config[:new_role]}' was not found on the server. Did you upload it?")
         end
-
-        ui.msg("Fixing up the run_list!\n")
-        ui.msg("Here is the modified set of roles: #{@new_list}")
-
-        @node.run_list(@new_list)
-        @node.save
-        ui.msg("Node run_list has been saved on #{host}.") unless !$?.success?
+          
       end
     end
 
