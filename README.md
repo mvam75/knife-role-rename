@@ -1,3 +1,5 @@
+[![Gem Version](https://badge.fury.io/rb/knife-role-replace.png)](http://badge.fury.io/rb/knife-role-replace)
+
 knife-role-replace
 =================
 Rename a Chef role applied to a node
